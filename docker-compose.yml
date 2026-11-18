@@ -1,5 +1,6 @@
 services:
   backend:
+    image: ${BACKEND_IMAGE:-codewithharshal/devops-backend:local}
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -22,6 +23,7 @@ services:
       start_period: 10s
 
   frontend:
+    image: ${FRONTEND_IMAGE:-codewithharshal/devops-frontend:local}
     build:
       context: ./frontend
       dockerfile: Dockerfile

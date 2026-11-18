@@ -93,3 +93,16 @@ docker compose up --build
 ```
 
 The frontend is available at `http://localhost:5173/`, and the backend is available at `http://localhost:8000/api/hello/`. Compose runs the Django migrations before starting Gunicorn and waits for the backend health check before starting the frontend.
+
+## Jenkins CI/CD
+
+The root `Jenkinsfile` defines the CI/CD workflow for pushes to the `main` branch. It validates the Compose file, builds both Docker images, pushes commit-tagged images to Docker Hub under the `codewithharshal` namespace, and deploys those exact images on a Jenkins agent labelled `local-docker-deploy`.
+
+Before creating the Jenkins job, configure:
+
+1. A Jenkins agent with the label `local-docker-deploy`, Docker, and Docker Compose installed.
+2. A Jenkins username/password credential with ID `dockerhub-credentials`. Use the Docker Hub access token as the password.
+3. A Pipeline job that loads `Jenkinsfile` from the repository and tracks the `main` branch.
+4. A GitHub webhook pointing to Jenkins so pushes trigger the Pipeline.
+
+The deployment uses the commit SHA as the image tag, which makes each deployment traceable and allows rollback to an earlier image tag.
