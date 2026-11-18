@@ -4,6 +4,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
     command: >-
       sh -c "python manage.py migrate --noinput &&
       exec gunicorn --bind 0.0.0.0:8000 --workers 2 config.wsgi:application"
@@ -27,6 +29,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
     ports:
       - "5173:8080"
     depends_on:
