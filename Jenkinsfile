@@ -27,7 +27,7 @@ pipeline {
                 branch 'main'
             }
             steps {
-                bat 'docker compose config'
+                bat 'docker compose --env-file frontend/.env config'
             }
         }
 
@@ -44,9 +44,8 @@ pipeline {
                     env.BACKEND_IMAGE = "${env.DOCKERHUB_NAMESPACE}/devops-backend:${env.IMAGE_TAG}"
                     env.FRONTEND_IMAGE = "${env.DOCKERHUB_NAMESPACE}/devops-frontend:${env.IMAGE_TAG}"
                 }
-                bat 'docker build -t "%BACKEND_IMAGE%" ./backend'
-                bat 'docker build -t "%FRONTEND_IMAGE%" ./frontend'
-                bat 'docker run --rm "%BACKEND_IMAGE%" python manage.py check'
+                bat 'docker compose --env-file frontend/.env build backend frontend'
+                bat 'docker run --rm --env-file backend/.env "%BACKEND_IMAGE%" python manage.py check'
             }
         }
 
@@ -79,8 +78,8 @@ pipeline {
                     "BACKEND_IMAGE=${env.BACKEND_IMAGE}",
                     "FRONTEND_IMAGE=${env.FRONTEND_IMAGE}"
                 ]) {
-                    bat 'docker compose pull'
-                    bat 'docker compose up -d --no-build --remove-orphans'
+                    bat 'docker compose --env-file frontend/.env pull'
+                    bat 'docker compose --env-file frontend/.env up -d --no-build --remove-orphans'
                 }
             }
         }
